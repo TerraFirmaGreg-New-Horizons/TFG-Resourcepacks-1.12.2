@@ -1,0 +1,14 @@
+{
+  "ctm": {
+    "ctm_version": 1,
+    "type": "ctm",
+    "layer": "BLOOM",
+    "gregtech": true,
+    "textures": [
+      "chisel:blocks/antiblock/antiblock_ctm"
+    ],
+    "extra": {
+      "ignore_states": true
+    }
+  }
+}
