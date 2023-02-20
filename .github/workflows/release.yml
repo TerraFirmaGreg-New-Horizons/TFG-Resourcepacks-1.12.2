@@ -1,0 +1,48 @@
+name: Deploy modpack
+
+on:
+  push:
+    tags:
+      - 'R*'
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=version::${GITHUB_REF#refs/tags/R}
+
+      - name: Set the version
+        run: |
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          sed -i -e "s/VERSION/${VERSION}/g" ./pack.mcmeta
+
+      - name: Archive Release CF normal
+        run: |
+          zip -r ./TFG-Resourcepacks-${{ steps.get_version.outputs.version }}.zip ./pack.mcmeta ./pack.png ./assets/
+      - name: Upload Curseforge normal
+        uses: henkelmax/upload-curseforge-modpack-action@v1.0.0
+        with: 
+          api-token: ${{ secrets.CF_API_TOKEN }}
+          project-id: '828698'
+          modpack-path: ./TFG-Resourcepacks-${{ steps.get_version.outputs.version }}.zip
+          changelog: '${{ steps.get_version.outputs.description }}' 
+          changelog-format: markdown
+          game-version: '1.12.2'
+          display-name: TFG-Resourcepacks-${{ steps.get_version.outputs.version }}
+          release-type: 'release'
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          prerelease: false
+          generate_release_notes: false
+          name: Release ${{ steps.get_version.outputs.version }}
+          body: ${{ steps.get_version.outputs.description }}
+          files: |
+            ./TFG-Resourcepacks-${{ steps.get_version.outputs.version }}.zip
