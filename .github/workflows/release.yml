@@ -21,10 +21,12 @@ jobs:
           VERSION=${{ steps.get_version.outputs.VERSION }}
           sed -i -e "s/VERSION/${VERSION}/g" ./pack.mcmeta
 
-      - name: Archive Release CF normal
+      - name: Archive Release CF
         run: |
           zip -r ./TFG-Resourcepacks-${{ steps.get_version.outputs.version }}.zip ./pack.mcmeta ./pack.png ./assets/
-      - name: Upload Curseforge normal
+
+
+      - name: Upload Curseforge
         uses: henkelmax/upload-curseforge-modpack-action@v1.0.0
         with: 
           api-token: ${{ secrets.CF_API_TOKEN }}
